@@ -1,11 +1,15 @@
 #!/bin/sh
 
-# Start Nginx
+# Start Nginx in the background
 nginx -g "daemon off;" &
 
-# Force metadata sync
-echo "📦 Syncing pieces..."
-node dist/packages/server/api/main.js sync-metadata &
+# Delay a bit to allow Nginx to start (optional, avoids race conditions)
+sleep 2
 
-# Start backend server
+# 👇 Force sync all Activepieces metadata into the database
+echo "🔁 Syncing Activepieces piece metadata..."
+node dist/packages/server/api/main.js sync-metadata
+
+# Start the backend server
+echo "🚀 Starting Activepieces backend..."
 node --enable-source-maps dist/packages/server/api/main.js
